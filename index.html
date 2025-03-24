@@ -67,7 +67,7 @@
     const backgroundPlane = document.querySelector("#background-plane");
 
     // Se è iOS, lascia i piani a 0, altrimenti spostali di 0.1
-    const yPosition = isIOS() ? "0 0 0" : "0 0.1 0";
+    const yPosition = isIOS() ? "0 0.05 0" : "0 0.1 0";
 
     animatedPlane.setAttribute("position", yPosition);
     backgroundPlane.setAttribute("position", yPosition);
