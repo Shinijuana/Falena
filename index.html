@@ -59,17 +59,16 @@
 
     <script>
       // Autoplay del video quando il target è riconosciuto
-      const sceneEl = this.el.sceneEl;
       const video = document.querySelector("#video-source");
       const target = document.querySelector("#ar-target");
 
-     sceneEl.addEventListener('targetFound', () => {
+     target.addEventListener('targetFound', () => {
         video.play();
         const startImage = document.getElementById('startImage');
       startImage.setAttribute('visible', 'false');
       });
 
-      sceneEl.addEventListener("targetLost", () => {
+      target.addEventListener("targetLost", () => {
         video.pause();
       });
       </script>
