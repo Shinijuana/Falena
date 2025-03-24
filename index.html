@@ -24,7 +24,7 @@
     </style>
   </head>
   <body>
-  <a-scene mindar-image="uiScanning: no; imageTargetSrc: https://raw.githack.com/Shinijuana/Falena/main/falena.mind; filterMinCF: 0.1; filterBeta: 10; warmupTolerance: 3; missTolerance: 5;" 
+   <a-scene mindar-image="uiScanning: no; imageTargetSrc: https://raw.githack.com/Shinijuana/Falena/main/falena.mind; filterMinCF: 0.1; filterBeta: 10; warmupTolerance: 3; missTolerance: 5;" 
              color-space="sRGB" 
              renderer="colorManagement: true, physicallyCorrectLights" 
              vr-mode-ui="enabled: false" 
@@ -33,29 +33,41 @@
       
       <!-- Caricamento degli asset -->
       <a-assets>
-        <video id="video-source" 
-               src="assets/Falena.mp4" 
-               preload="auto" 
-               loop="true" 
-               muted 
-               playsinline 
-               crossorigin="anonymous">
-        </video>
+        <!-- Sequenza di immagini WebP -->
+        <img id="frame1" src="assets/1.webp">
+        <img id="frame2" src="assets/2.webp">
+        <img id="frame3" src="assets/3.webp">
+        <img id="frame4" src="assets/4.webp">
+        <img id="frame5" src="assets/5.webp">
+        <img id="frame6" src="assets/6.webp">
+        <img id="frame7" src="assets/7.webp">
+        <img id="frame8" src="assets/8.webp">
+        <img id="frame9" src="assets/9.webp">
+
+        <!-- Video originale (commentato) -->
+        <!-- <video id="video-source" src="assets/Falena.mp4" preload="auto" loop="true" crossorigin="anonymous"></video> -->
       </a-assets>
 
       <!-- Configurazione della telecamera -->
       <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable">
-        <a-image id="startImage" src="assets/Falena.jpg" position="0 0 -15" scale="10 11 11" opacity=".8" visible="true" 
-                 animation__pulse="property: scale; from: 4 4 4; to: 4.5 4.5 4.5; dir: alternate; loop: true; dur: 1000">
-        </a-image>
+        <a-image id="startImage" src="assets/Falena.jpg" position="0 0 -15" scale="10 11 11" opacity=".8" visible="true" animation__pulse="property: scale; from: 4 4 4; to: 4.5 4.5 4.5; dir: alternate; loop: true; dur: 1000"></a-image>
       </a-camera>
       
       <a-light type="directional" intensity="0.5" position="1 1 1"></a-light>
       <a-light type="ambient" intensity="0.7"></a-light>
    
-      <!-- Entità per il target AR e il video -->
+      <!-- Entità per il target AR -->
       <a-entity id="ar-target" mindar-image-target="targetIndex: 0;">
-        <a-video 
+        <!-- Animazione con sequenza di immagini WebP -->
+        <a-plane 
+          id="animated-plane" 
+          width="1" height="1" 
+          position="0 0 0" 
+          material="shader: standard; transparent: true; src: #frame1">
+        </a-plane>
+
+        <!-- Video originale (commentato) -->
+        <!-- <a-video 
           id="tracked-video"
           src="#video-source"
           width="1" height="1.7" 
@@ -63,10 +75,10 @@
           rotation="0 0 0"
           autoplay
           loop>
-        </a-video>
+        </a-video> -->
       </a-entity>
 
-    <script>
+   <!-- <script>
       document.addEventListener("DOMContentLoaded", () => {
         const video = document.querySelector("#video-source");
         const target = document.querySelector("#ar-target");
@@ -93,6 +105,34 @@
           video.muted = true;
           startImage.setAttribute("visible", "true");
         });
+      });
+    </script> -->
+
+    
+    <script>
+      // Ciclo animazione con le immagini WebP
+      let frameIndex = 1;
+      const totalFrames = 9;
+      const animatedPlane = document.querySelector("#animated-plane");
+      const startImage = document.getElementById("startImage");
+
+      function animateFrames() {
+        frameIndex = (frameIndex % totalFrames) + 1;  
+        animatedPlane.setAttribute("material", `src: #frame${frameIndex}`);
+      }
+
+      let animationInterval;
+
+      // Quando il target viene riconosciuto, inizia l'animazione
+      document.querySelector("#ar-target").addEventListener("targetFound", () => {
+        animationInterval = setInterval(animateFrames, 100); // Cambia frame ogni 100ms
+        startImage.setAttribute("visible", "false");
+      });
+
+      // Quando il target non è più visibile, ferma l'animazione
+      document.querySelector("#ar-target").addEventListener("targetLost", () => {
+        clearInterval(animationInterval);
+        startImage.setAttribute("visible", "true");
       });
     </script>
 
