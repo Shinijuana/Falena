@@ -33,18 +33,27 @@
       
       <!-- Caricamento degli asset -->
       <a-assets>
-        <video id="video-source" src="assets/Falena.mp4" preload="auto" loop="true" crossorigin="anonymous"></video>
+        <video id="video-source" 
+               src="assets/Falena.mp4" 
+               preload="auto" 
+               loop="true" 
+               muted 
+               playsinline 
+               crossorigin="anonymous">
+        </video>
       </a-assets>
 
       <!-- Configurazione della telecamera -->
       <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable">
-        <a-image id="startImage" src="assets/Falena.jpg" position="0 0 -15" scale="10 11 11" opacity=".8" visible="true" animation__pulse="property: scale; from: 4 4 4; to: 4.5 4.5 4.5; dir: alternate; loop: true; dur: 1000"></a-image>
+        <a-image id="startImage" src="assets/Falena.jpg" position="0 0 -15" scale="10 11 11" opacity=".8" visible="true" 
+                 animation__pulse="property: scale; from: 4 4 4; to: 4.5 4.5 4.5; dir: alternate; loop: true; dur: 1000">
+        </a-image>
       </a-camera>
       
       <a-light type="directional" intensity="0.5" position="1 1 1"></a-light>
       <a-light type="ambient" intensity="0.7"></a-light>
    
-      <!-- Entità per il target AR e il modello 3D -->
+      <!-- Entità per il target AR e il video -->
       <a-entity id="ar-target" mindar-image-target="targetIndex: 0;">
         <a-video 
           id="tracked-video"
@@ -58,21 +67,32 @@
       </a-entity>
 
     <script>
-      // Autoplay del video quando il target è riconosciuto
-      const video = document.querySelector("#video-source");
-      const target = document.querySelector("#ar-target");
-      const startImage = document.getElementById('startImage');
+      document.addEventListener("DOMContentLoaded", () => {
+        const video = document.querySelector("#video-source");
+        const target = document.querySelector("#ar-target");
+        const startImage = document.getElementById('startImage');
 
-     target.addEventListener('targetFound', () => {
-        video.play();
-        startImage.setAttribute('visible', 'false');
-      });
+        // Fix per iOS: Forza il video a partire dopo un'interazione dell'utente
+        const playVideo = () => {
+          video.muted = true;  // Imposta muto per l'autoplay su iOS
+          video.play().catch(e => console.log("Errore avvio video:", e));
+          document.removeEventListener("click", playVideo);
+        };
+        document.addEventListener("click", playVideo);
 
-      target.addEventListener("targetLost", () => {
-        video.pause();
-        startImage.setAttribute('visible', 'true');
+        // Autoplay quando il target viene trovato
+        target.addEventListener("targetFound", () => {
+          video.play().catch(e => console.log("Errore avvio video:", e));
+          startImage.setAttribute("visible", "false");
+        });
+
+        // Pausa quando il target viene perso
+        target.addEventListener("targetLost", () => {
+          video.pause();
+          startImage.setAttribute("visible", "true");
+        });
       });
-      </script>
+    </script>
 
   </a-scene>
   </body>
