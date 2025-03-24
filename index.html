@@ -83,12 +83,14 @@
         // Autoplay quando il target viene trovato
         target.addEventListener("targetFound", () => {
           video.play().catch(e => console.log("Errore avvio video:", e));
+          video.muted = false;
           startImage.setAttribute("visible", "false");
         });
 
         // Pausa quando il target viene perso
         target.addEventListener("targetLost", () => {
           video.pause();
+          video.muted = true;
           startImage.setAttribute("visible", "true");
         });
       });
