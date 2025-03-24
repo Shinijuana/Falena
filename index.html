@@ -33,11 +33,12 @@
       
       <!-- Caricamento degli asset -->
       <a-assets>
-        <a-asset-item id="busto" src="https://raw.githack.com/Shinijuana/MARKERTHREE/main/assets/busto%20emilio.gltf"></a-asset-item>
+        <video id="video-source" src="assets/Falena.mp4" preload="auto" loop="true" crossorigin="anonymous"></video>
       </a-assets>
 
       <!-- Configurazione della telecamera -->
       <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="near: 10; far: 10000; objects: .clickable">
+        <a-image id="startImage" src="assets/Falena.jpg" position="0 0 -15" scale="10 7 10" opacity=".8" visible="true" animation__pulse="property: scale; from: 4 4 4; to: 4.5 4.5 4.5; dir: alternate; loop: true; dur: 1000"></a-image>
       </a-camera>
       
       <a-light type="directional" intensity="0.5" position="1 1 1"></a-light>
@@ -45,9 +46,34 @@
    
       <!-- Entità per il target AR e il modello 3D -->
       <a-entity id="ar-target" mindar-image-target="targetIndex: 0;">
-        <a-entity id="tracked-model" rotation="90 0 0" position="0 0 0" scale="2 2 2" gltf-model="#busto" class="clickable" animation__move="property: position; from: 0 0 0.25; to: 0 0 .75; dur: 1680; loop: true; dir: alternate; easing: easeInOutSine;"></a-entity>
+        <a-video 
+          id="tracked-video"
+          src="#video-source"
+          width="1" height="1.8" 
+          position="0 0 0" 
+          rotation="0 0 0"
+          autoplay
+          loop>
+        </a-video>
       </a-entity>
-      
+
+    <script>
+      // Autoplay del video quando il target è riconosciuto
+      const sceneEl = this.el.sceneEl;
+      const video = document.querySelector("#video-source");
+      const target = document.querySelector("#ar-target");
+
+     sceneEl.addEventListener('targetFound', () => {
+        video.play();
+        const startImage = document.getElementById('startImage');
+      startImage.setAttribute('visible', 'false');
+      });
+
+      sceneEl.addEventListener("targetLost", () => {
+        video.pause();
+      });
+      </script>
+
   </a-scene>
   </body>
 </html>
